@@ -1,9 +1,7 @@
 import React from 'react';
 import { withStyles } from '@material-ui/core';
 import Drawer from '@material-ui/core/Drawer';
-import Button from '@material-ui/core/Button';
 import List from '@material-ui/core/List';
-import Divider from '@material-ui/core/Divider';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -11,35 +9,43 @@ import InboxIcon from '@material-ui/icons/MoveToInbox';
 import MailIcon from '@material-ui/icons/Mail';
 
 const styles = {
-    drawer: {
-      width: 'auto',
-    },
-  };
+  drawer: {
+    display : 'flex',
+    justifyContent : 'center',
+    width : 'auto',
+  },
+  menuLink:{
+    textDecoration : 'none',
+  },
+};
   
 
-class DrawersContainer extends React.Component{
+class MenuDrawer extends React.Component{
     constructor(props){
         super(props);
+        this.state={
+          item : ['Write', 'Starred', 'Send email'],
+          item2 : ['Drafts','All mail', 'Trash', 'Spam'],
+        }
     }
     render(){
         const { classes } = this.props;
         const draweritems = (
             <div className={classes.drawer}>
               <List>
-                {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-                  <ListItem button key={text}>
+                {this.state.item.map((text, index) => (
+                  <a className={classes.menuLink} href={`./${text}`}><ListItem button key={text}>
                     <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
                     <ListItemText primary={text} />
-                  </ListItem>
+                  </ListItem></a>
                 ))}
               </List>
-              <Divider />
               <List>
-                {['All mail', 'Trash', 'Spam'].map((text, index) => (
-                  <ListItem button key={text}>
+                {this.state.item2.map((text, index) => (
+                  <a className={classes.menuLink} href={`./${text}`}><ListItem button key={text}>
                     <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
                     <ListItemText primary={text} />
-                  </ListItem>
+                  </ListItem></a>
                 ))}
               </List>
             </div>
@@ -59,4 +65,4 @@ class DrawersContainer extends React.Component{
     }
 }
 
-export default withStyles(styles)(DrawersContainer);
+export default withStyles(styles)(MenuDrawer);

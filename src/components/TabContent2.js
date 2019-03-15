@@ -2,7 +2,7 @@ import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
 
 const styles = theme => ({
-    container2: {
+    tabContent2: {
       marginLeft : 20,
       marginRight : 20,
     },
@@ -12,14 +12,14 @@ const styles = theme => ({
     },
 });
 
-class TabContainer2 extends React.Component{
+class TabContent2 extends React.Component{
     constructor(props){
         super(props);
     }
     render(){
         const {classes} = this.props;
         return(
-            <div className={classes.container2}>
+            <div className={classes.tabContent2}>
                 <p>모든 국민의 재산권은 보장된다. 그 내용과 한계는 법률로 정한다. 훈장등의 영전은 이를 받은 자에게만 효력이 있고, 어떠한 특권도 이에 따르지 아니한다.</p>
 <p>헌법재판소 재판관은 탄핵 또는 금고 이상의 형의 선고에 의하지 아니하고는 파면되지 아니한다. 누구든지 병역의무의 이행으로 인하여 불이익한 처우를 받지 아니한다.</p>
 <p>모든 국민은 신속한 재판을 받을 권리를 가진다. 형사피고인은 상당한 이유가 없는 한 지체없이 공개재판을 받을 권리를 가진다. 지방의회의 조직·권한·의원선거와 지방자치단체의 장의 선임방법 기타 지방자치단체의 조직과 운영에 관한 사항은 법률로 정한다.</p>
@@ -39,4 +39,4 @@ class TabContainer2 extends React.Component{
     }
 }
 
-export default withStyles(styles)(TabContainer2);
+export default withStyles(styles)(TabContent2);

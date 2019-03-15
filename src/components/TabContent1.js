@@ -125,7 +125,7 @@ const CustomTableCell = withStyles(theme => ({
     },
   }))(TableCell);
 
-class TabContainer1 extends React.Component {
+class TabContent0 extends React.Component {
     constructor(props){
         super(props);
         this.state = {
@@ -214,4 +214,4 @@ class TabContainer1 extends React.Component {
     }
   }
   
-export default withStyles(styles)(TabContainer1);
+export default withStyles(styles)(TabContent0);

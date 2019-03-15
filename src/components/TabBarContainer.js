@@ -6,14 +6,13 @@ import Tab from '@material-ui/core/Tab';
 import { withStyles } from '@material-ui/core';
 
 const styles = theme => ({
-
     tabs:{  
         display: 'flex',
         flexGlow : 2,
         justifyContent : 'center',
         backgroundColor: theme.palette.background.paper,
     },
-  });
+});
 
 class TabBarContainer extends React.Component{
     constructor(props){

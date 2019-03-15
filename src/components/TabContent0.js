@@ -7,7 +7,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { withStyles } from '@material-ui/core/styles';
 
 const styles = theme => ({
-    container0: {
+    tabContent0: {
     },
     heading: {
       fontSize: theme.typography.pxToRem(15),
@@ -15,14 +15,14 @@ const styles = theme => ({
     },
 });
 
-class TabContainer0 extends React.Component{
+class TabContent0 extends React.Component{
     constructor(props){
         super(props);
     }
     render(){
         const {classes} = this.props;
         return(
-            <div className={classes.container0}>
+            <div className={classes.tabContent0}>
                 <Typography component="div" style={{ padding: 8 * 3 }}>
                     {this.props.children} hello {this.props.value}
                     <ExpansionPanel>
@@ -58,4 +58,4 @@ class TabContainer0 extends React.Component{
     }
 }
 
-export default withStyles(styles)(TabContainer0);
+export default withStyles(styles)(TabContent0);
