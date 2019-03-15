@@ -8,7 +8,6 @@ import { withStyles } from '@material-ui/core/styles';
 
 const styles = theme => ({
     container0: {
-      width: '100%',
     },
     heading: {
       fontSize: theme.typography.pxToRem(15),
@@ -23,7 +22,7 @@ class TabContainer0 extends React.Component{
     render(){
         const {classes} = this.props;
         return(
-            <div className="container1">
+            <div className={classes.container0}>
                 <Typography component="div" style={{ padding: 8 * 3 }}>
                     {this.props.children} hello {this.props.value}
                     <ExpansionPanel>
