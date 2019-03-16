@@ -52,6 +52,16 @@ function show(response){
     }
   });
 }
+function main(response){
+  console.log(`send ${__dirname} + '/client/public/index.html'..`);
+  fs.readFile(__dirname + '/client/public/index.html', (err, data) => {
+    if (err) console.log(err);
+    response.writeHead(200, {'Content-Type': 'text/html'});
+    response.write(data);
+    response.end();
+  });
+}
 exports.start = start;
 exports.upload = upload;
 exports.show = show;
+exports.main=main;
