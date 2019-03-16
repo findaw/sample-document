@@ -9,7 +9,6 @@ import MenuIcon from '@material-ui/icons/Menu';
 import SearchIcon from '@material-ui/icons/Search';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import MenuDrawer from './MenuDrawer';
-import { deepOrange } from '@material-ui/core/colors';
 
 class MainBar extends React.Component{
     constructor(props){ 

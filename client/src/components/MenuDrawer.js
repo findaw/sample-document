@@ -34,18 +34,22 @@ class MenuDrawer extends React.Component{
             <div className={classes.drawer}>
               <List>
                 {this.state.item.map((text, index) => (
-                  <a className={classes.menuLink} href={`./${text}`}><ListItem button key={text}>
-                    <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-                    <ListItemText primary={text} />
-                  </ListItem></a>
+                  <a key={text} className={classes.menuLink} href={`./${text}`}>
+                    <ListItem button >
+                      <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
+                      <ListItemText primary={text} />
+                    </ListItem>
+                  </a>
                 ))}
               </List>
               <List>
                 {this.state.item2.map((text, index) => (
-                  <a className={classes.menuLink} href={`./${text}`}><ListItem button key={text}>
-                    <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-                    <ListItemText primary={text} />
-                  </ListItem></a>
+                  <a key={text} className={classes.menuLink} href={`./${text}`}>
+                    <ListItem button >
+                      <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
+                      <ListItemText primary={text} />
+                    </ListItem>
+                  </a>
                 ))}
               </List>
             </div>
