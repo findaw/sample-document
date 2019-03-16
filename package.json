@@ -1,15 +1,13 @@
 {
-    "name" : "page-server",
-    "version" : "1.0.0",
-    "scripts" : {
-        "client" : "cd client && yarn start",
-        "server" : "nodemon server.js",
-        "dev" : "concurrently --kill-others-on-fail \"yarn server\" \"yarn client\""
+    "name": "page-server",
+    "version": "1.0.0",
+    "scripts": {
+        "client": "cd client && yarn start",
+        "server": "nodemon index.js",
+        "dev": "concurrently --kill-others-on-fail \"yarn server\" \"yarn client\""
     },
-    "dependencies" : {
-
+    "dependencies": {
+        "formidable": "^1.2.1"
     },
-    "devDependencies" : {
-
-    }
+    "devDependencies": {}
 }
