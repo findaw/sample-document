@@ -1,14 +1,17 @@
-const http = require('http'),
-    url = require('url');
-const port = 5000;
-exports.start = (route, handle) =>{
-    http.createServer((req, res) => {
+const express = require('express');
+//const bodyParser = require('body-parser');
+const app = express();
 
-       const pathname = url.parse(req.url).pathname;
-       route(handle, pathname, res, req);
+//app.use(bodyParser.urlencoded({extended:true}));
+app.use(express.json());
 
-    }).listen(port);
+app.get('/', (req, res)=> res.send('hello world'));
 
-    console.log("server has started..");
-};
+/*example */
+app.post('/signin', (req, res) => {
+    const { username, password } = req.body;
+    // 클라이언트로부터 전송된 페이로드를 그대로 response한다.
+    res.send({ username, password });
+  });
 
+app.listen(3000, ()=> console.log('listening on port 3000'));
