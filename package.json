@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "scripts": {
         "client": "cd client && yarn start",
-        "server": "nodemon index.js",
+        "server": "nodemon server.js",
         "dev": "concurrently --kill-others-on-fail \"yarn server\" \"yarn client\""
     },
     "dependencies": {
@@ -11,5 +11,7 @@
         "express": "^4.16.4",
         "formidable": "^1.2.1"
     },
-    "devDependencies": {}
+    "devDependencies": {
+        "concurrently": "^4.1.0"
+    }
 }

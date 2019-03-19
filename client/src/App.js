@@ -2,7 +2,13 @@ import React, { Component } from 'react';
 import './App.css';
 import MainBar from './components/MainBar';
 import TabBarContainer from './components/TabBarContainer';
+import {withStyles} from '@material-ui/core';
 
+const styles = theme=>({
+  app : {
+      
+  },
+})
 
 class App extends Component {
   constructor(props){ 
@@ -11,8 +17,9 @@ class App extends Component {
   }
 
   render() {
+    const {classes} = this.props;
     return (
-      <div>
+      <div className={classes.app}>
         <MainBar />
         <TabBarContainer />
       </div>
@@ -21,4 +28,4 @@ class App extends Component {
 
 }
 
-export default App;
+export default withStyles(styles)(App);

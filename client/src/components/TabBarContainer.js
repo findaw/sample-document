@@ -41,11 +41,11 @@ class TabBarContainer extends React.Component{
                       <Tab label="main" />
                       <Tab label="case" />
                       <Tab label="document" />
+                      <Tab label="write" />
+                      <Tab label="etc" />
+                      <Tab label="etc" />
+                      <Tab label="etc" />
                       <Tab label="more" />
-                      <Tab label="etc" />
-                      <Tab label="etc" />
-                      <Tab label="etc" />
-                      <Tab label="etc" />
                   </Tabs>
                 </div>
               </AppBar>
