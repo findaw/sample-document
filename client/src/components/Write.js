@@ -1,4 +1,5 @@
 import React from'react';
+import CheckBoxList from'./CheckBoxList';
 import {withStyles} from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
@@ -13,7 +14,6 @@ import Badge from '@material-ui/core/Badge';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline'
 import Chip from '@material-ui/core/Chip';
 import Paper from '@material-ui/core/Paper';
-
 import TagFacesIcon from '@material-ui/icons/TagFaces';
 
 const styles = theme=>({
@@ -78,8 +78,9 @@ class Write extends React.Component{
         }
     }
     handleTopicAddButton = () =>{
+        if(this.state.addTopic.trim() === "") return;
         this.setState(({topic,check,need,content})=>({
-            topic : [...topic,this.state.addTopic],
+            topic : [...topic,this.state.addTopic.trim()],
             check : [...check,false],
             need : [...need,false],
             content : [...content,""],
@@ -92,18 +93,19 @@ class Write extends React.Component{
         });   
     }
     handleTagAddButton = () =>{
+        if(this.state.addTag.trim() === "") return;
         this.setState({
-            tagData : [...this.state.tagData,this.state.addTag],
+            tagData : [...this.state.tagData,this.state.addTag.trim()],
             addTag : "",
         });
     }
-    handleTagFieldChange = event => {
+    handleTagFieldChange = ({target}) => {
         this.setState({
-             addTag : event.target.value,
+             addTag : target.value,
         });
     }
     handleTagDelete = data => () => {
-        if (data.label === 'React') {
+        if (data === 'React') {
           alert('Why would you want to delete React?! :)'); 
           return;
         }
@@ -131,14 +133,15 @@ class Write extends React.Component{
     }
     render(){
         const { classes } = this.props;
+        const {topic, need, check,content, tagData, addTag, addTopic} = this.state;
         const contentBox  =
-            this.state.topic.map((value, index)=>{
+            topic.map((value, index)=>{
                 return (
                     <ExpansionPanel key={index}>
                         <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
                             <Typography className={classes.heading}>
-                                <Checkbox indeterminate={this.state.check[index]} checked={this.state.check[index]}/>
-                                {this.state.need[index] ? ( <Badge color="secondary" variant="dot">{value}&nbsp;&nbsp;</Badge>) : value}
+                                <Checkbox indeterminate={check[index]} checked={check[index]}/>
+                                {need[index] ? ( <Badge color="secondary" variant="dot">{value}&nbsp;&nbsp;</Badge>) : value}
                             </Typography>
                         </ExpansionPanelSummary>
                         <ExpansionPanelDetails>
@@ -147,7 +150,7 @@ class Write extends React.Component{
                                 multiline
                                 rows="15"
                                 fullWidth
-                                value={this.state.content[index]}
+                                value={content[index]}
                                 onChange={this.handleContentChange(index)}
                                 placeholder="내용 입력"
                                 className={classes.textField}
@@ -172,7 +175,7 @@ class Write extends React.Component{
                 />
                 <div className={classes.tagField}>
                     <Paper className={classes.tagPaper}>
-                        {this.state.tagData.map((data,index) => {
+                        {tagData.map((data,index) => {
                         let icon = null;
 
                         if (data === 'React') {
@@ -195,7 +198,7 @@ class Write extends React.Component{
                         label="태그명"
                         placeholder="관련 태그 입력"
                         className={classes.textField}
-                        value={this.state.addTag}
+                        value={addTag}
                         onChange={this.handleTagFieldChange}
                         margin="normal"
                         InputLabelProps={{
@@ -217,7 +220,7 @@ class Write extends React.Component{
                         label="주제명"
                         placeholder="추가할 항목 이름 입력"
                         className={classes.textField}
-                        value={this.state.addTopic}
+                        value={addTopic}
                         onChange={this.handleTopicFieldChange}
                         margin="normal"
                         InputLabelProps={{
@@ -228,6 +231,7 @@ class Write extends React.Component{
                         항목추가<AddCircleOutlineIcon className={classes.rightIcon} />
                     </Button><br/>
                 </div>
+                <CheckBoxList/>
                 <Button onClick={this.handleSaveButton}variant="contained" color="primary" className={classes.button}>저장</Button>
             </div>
         );
