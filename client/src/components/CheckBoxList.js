@@ -41,13 +41,14 @@ class CheckBoxList extends React.Component {
 
   handleChange = (key,key2)=> (event,value) => {
     // this.setState({ 
-    //   [key]: {
-    //     ...this.state[key],
-    //     [key2] : value
-    //   }
+    //   [key]:   Object.assign({...this.state[key]}, {[key2] : value})
     // });
+    
     this.setState({ 
-      [key]:   Object.assign({...this.state[key]}, {[key2] : value})
+      [key]: {
+        ...this.state[key],
+        [key2] : value
+      }
     }, ()=>{
       console.log(value);
       console.log(this.state[key]);
