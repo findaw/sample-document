@@ -11,10 +11,6 @@ import Checkbox from '@material-ui/core/Checkbox';
 import InputBase from '@material-ui/core/InputBase';
 import Button from '@material-ui/core/Button';
 import Badge from '@material-ui/core/Badge';
-import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline'
-import Chip from '@material-ui/core/Chip';
-import Paper from '@material-ui/core/Paper';
-import TagFacesIcon from '@material-ui/icons/TagFaces';
 
 const styles = theme=>({
     container:{
@@ -53,74 +49,69 @@ class Write extends React.Component{
     constructor(props){
         super(props);
         this.state = {
-            topic : ["주제1", "주제2", "주제3", "주제4"],
-            check : [false,false,false,false],
-            need : [true,false,false,false],
-            content : ["","","",""],
-            tagData: ['Angular','jQuery','Polymer','React','Vue.js'],
-            addTag:"",
-            addTopic:"",
+            subjectList : [],
+            defaultCategory : "",
         };
     }
-    handleCheckbox = index =>{
-        this.setState({
-            check : this.state.check.map((v,i) => i === index ? !v : v),
-        });
+    callApiSubject = async () =>{
+        const rspSbj = await fetch("/api/document_subject");
+        const subject = await rspSbj.json();
+        return subject;
+    }
+    callApiCategory = async () =>{
+        const rspCate = await fetch("/api/document_category");
+        const category = await rspCate.json();
+        return category;
+    }
+    componentDidMount(){
+        this.callApiSubject()
+            .then(res=>{
+                let regx = /사건/;
+                return res.map( ({ subject }) => {
+                    const isNeed = regx.test(subject);
+                    return {title : subject, check : false, isNeed : isNeed, content : ""};
+                });
+            })
+            .then(res=>this.setState({subjectList : res}))
+            .catch(err=>console.log(err));
+        
+        this.callApiCategory()
+            .then(res=>{
+                let prevType = "";
+                let items = {};
+                res.forEach( ({ category, categorytype })=> { 
+                    if(prevType !== categorytype)
+                        items[categorytype] = {};
+                    items[categorytype][category] = false;
+                    prevType = categorytype;
+                })
+                this.setState( { defaultCategory : items } )
+            })
+            .catch(err=>console.log(err));
+        
     }
     handleContentChange = index => event => {
         this.setState({
-            content : this.state.content.map((v,i) => i === index ? event.target.value : v)
+            subjectList : this.state.subjectList.map((v,i) => 
+              i === index ? {title : v.title, check : v.check, isNeed : v.isNeed, content : event.target.value} : v  
+            )
         });
-
-        if((event.target.value.trim() !== "" && !this.state.check[index])
-        || (event.target.value.trim() === "" && this.state.check[index])){
-            this.handleCheckbox(index);
+        if((event.target.value.trim() !== "" && !this.state.subjectList[index].check)
+            || (event.target.value.trim() === "" && this.state.subjectList[index].check)){
+                this.setState({
+                    subjectList : this.state.subjectList.map((v,i) => 
+                        i === index ? {title : v.title, check : !v.check, isNeed : v.isNeed, content : event.target.value} : v 
+                    )
+                });
         }
-    }
-    handleTopicAddButton = () =>{
-        if(this.state.addTopic.trim() === "") return;
-        this.setState(({topic,check,need,content})=>({
-            topic : [...topic,this.state.addTopic.trim()],
-            check : [...check,false],
-            need : [...need,false],
-            content : [...content,""],
-            addTopic : "",
-        }));
-    }
-    handleTopicFieldChange = event => {
-        this.setState({
-             addTopic : event.target.value,
-        });   
-    }
-    handleTagAddButton = () =>{
-        if(this.state.addTag.trim() === "") return;
-        this.setState({
-            tagData : [...this.state.tagData,this.state.addTag.trim()],
-            addTag : "",
-        });
-    }
-    handleTagFieldChange = ({target}) => {
-        this.setState({
-             addTag : target.value,
-        });
-    }
-    handleTagDelete = data => () => {
-        if (data === 'React') {
-          alert('Why would you want to delete React?! :)'); 
-          return;
-        }
-        const chipData = [...this.state.tagData];
-        const chipToDelete = chipData.indexOf(data);
-        chipData.splice(chipToDelete, 1);
 
-        this.setState({tagData : chipData});
-    };
+    }
     handleSaveButton = () => {
         let flag = 0;
         let text = "";
-        this.state.need.forEach((data,index) => {
-            if(data && !this.state.check[index]){
-                text +="/" + this.state.topic[index];
+        this.state.subjectList.forEach(obj => {
+            if(obj.isNeed && !obj.check){
+                text +="/" + obj.title;
                 flag++;
                 return;
             }
@@ -133,15 +124,15 @@ class Write extends React.Component{
     }
     render(){
         const { classes } = this.props;
-        const {topic, need, check,content, tagData, addTag, addTopic} = this.state;
+        const {subjectList, defaultCategory} = this.state;  
         const contentBox  =
-            topic.map((value, index)=>{
+            subjectList.map(({title, check, isNeed, content}, index)=>{
                 return (
                     <ExpansionPanel key={index}>
                         <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
                             <Typography className={classes.heading}>
-                                <Checkbox indeterminate={check[index]} checked={check[index]}/>
-                                {need[index] ? ( <Badge color="secondary" variant="dot">{value}&nbsp;&nbsp;</Badge>) : value}
+                                <Checkbox indeterminate={check} checked={check}/>
+                                {isNeed ? ( <Badge color="secondary" variant="dot">{title}&nbsp;&nbsp;</Badge>) : title}
                             </Typography>
                         </ExpansionPanelSummary>
                         <ExpansionPanelDetails>
@@ -150,7 +141,7 @@ class Write extends React.Component{
                                 multiline
                                 rows="15"
                                 fullWidth
-                                value={content[index]}
+                                value={content}
                                 onChange={this.handleContentChange(index)}
                                 placeholder="내용 입력"
                                 className={classes.textField}
@@ -173,65 +164,14 @@ class Write extends React.Component{
                     shrink: true,
                     }}
                 />
-                <div className={classes.tagField}>
-                    <Paper className={classes.tagPaper}>
-                        {tagData.map((data,index) => {
-                        let icon = null;
-
-                        if (data === 'React') {
-                            icon = <TagFacesIcon />;
-                        }
-
-                        return (
-                            <Chip
-                            key={index}
-                            icon={icon}
-                            label={data}
-                            onDelete={this.handleTagDelete(data)}
-                            className={classes.tag}
-                            />
-                        );
-                        })}
-                    </Paper>
-                    <TextField
-                        id="standard-with-placeholder"
-                        label="태그명"
-                        placeholder="관련 태그 입력"
-                        className={classes.textField}
-                        value={addTag}
-                        onChange={this.handleTagFieldChange}
-                        margin="normal"
-                        InputLabelProps={{
-                        shrink: true,
-                        }}
-                    />
-                    <Button onClick={this.handleTagAddButton} variant="contained" color="primary" className={classes.button}>
-                        태그추가<AddCircleOutlineIcon className={classes.rightIcon} />
-                    </Button><br/>
-                </div>
                 <div className={classes.contentField}>
                    {
                        contentBox
                    }
                 </div>
-                <div>
-                    <TextField
-                        id="standard-with-placeholder"
-                        label="주제명"
-                        placeholder="추가할 항목 이름 입력"
-                        className={classes.textField}
-                        value={addTopic}
-                        onChange={this.handleTopicFieldChange}
-                        margin="normal"
-                        InputLabelProps={{
-                        shrink: true,
-                        }}
-                    />
-                    <Button onClick={this.handleTopicAddButton} variant="contained" color="primary" className={classes.button}>
-                        항목추가<AddCircleOutlineIcon className={classes.rightIcon} />
-                    </Button><br/>
+                <div className={classes.tagField}>
+                { defaultCategory ? <CheckBoxList items={defaultCategory} /> : "load..." }
                 </div>
-                <CheckBoxList/>
                 <Button onClick={this.handleSaveButton}variant="contained" color="primary" className={classes.button}>저장</Button>
             </div>
         );

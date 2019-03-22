@@ -15,15 +15,17 @@ const conn = mysql.createConnection({
 conn.connect();
 app.use(express.json());
 
-app.get('/api/document_write', (req, res)=> {
-    conn.query("SELECT C.category, T.categorytype FROM document_category AS C JOIN document_categorytype as T ON C.categorytype_id =T.categorytype_id"
+app.get('/api/document_category', (req, res)=> {
+    conn.query("SELECT C.category, T.categorytype FROM document_category AS C JOIN document_categorytype as T ON C.categorytype_id =T.categorytype_id ORDER BY categorytype ASC;"
     , (err, rows, fields)=>{
-        console.log("에러메시지 :" + err);
-        console.log(rows);
-        console.log(fields);
         res.send(rows);
     });
 });
-
+app.get('/api/document_subject', (req, res)=> {
+    conn.query("SELECT subject FROM document_subject ORDER BY subject ASC;"
+    , (err, rows, fields)=>{
+        res.send(rows);
+    });
+});
 
 app.listen(5000, ()=> console.log('listening on port 3000'));
