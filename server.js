@@ -27,5 +27,14 @@ app.get('/api/document_subject', (req, res)=> {
         res.send(rows);
     });
 });
+app.post('/api/document', (req, res)=> {
+    let sql = "INSERT INTO document_list VALUES(null, ?,now(), 0)";
+    let title = req.body.title;
+    let params = [title];
+    conn.query(sql, params
+    , (err, rows, fields)=>{
+        res.send(rows);
+    });
+});
 
 app.listen(5000, ()=> console.log('listening on port 3000'));
