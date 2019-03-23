@@ -40,7 +40,7 @@ class TabBarContainer extends React.Component{
                   >
                       <Tab label="list" />
                       <Tab label="case" />
-                      <Tab label="document" />
+                      <Tab label="view" />
                       <Tab label="write" />
                       <Tab label="etc" />
                       <Tab label="etc" />
