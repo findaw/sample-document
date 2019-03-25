@@ -97,28 +97,34 @@ class DocumentList extends React.Component{
     
     handleCheckBoxChange = (key,key2)=> (event,value) => {
         const {tagDatas, trueTagDatas} = this.state;
-        if(value){
-            this.setState({trueTagDatas : [...trueTagDatas, key2]})
-        }else{
+        if(key === null){
+            Object.keys(tagDatas).forEach(data=>{
+                if (Object.keys(tagDatas[data]).indexOf(key2) > -1)
+                    key = data;
+            })
+        }
+        if(tagDatas[key][key2]){
             let tmp = [...trueTagDatas];
             let idx = tmp.indexOf(key2);
             if(idx > -1) {
                 tmp.splice(idx,1);
                 this.setState({trueTagDatas : tmp});
             }
+        }else{
+            this.setState({trueTagDatas : [...trueTagDatas, key2]})
         }
         this.setState({ 
             tagDatas : {
                 ...tagDatas,
                 [key] : {
                     ...tagDatas[key],
-                    [key2] : value
+                    [key2] : !tagDatas[key][key2]
                 }
             }
         }, ()=>{
-          //  console.log(value);
-          //  console.log(trueTagDatas);
-         //   console.log(tagDatas[key]);
+            // console.log(value);
+            // console.log(trueTagDatas);
+            // console.log(tagDatas[key]);
       });
 
         
@@ -132,46 +138,47 @@ class DocumentList extends React.Component{
     render() {
         const { classes } = this.props;
         const { dense, trueTagDatas } = this.state;
-        const filteredItems = () => {return this.state.lists.map((obj,index) =>{
-            let trueTags = obj.category.filter(data=>{
-                let idx = trueTagDatas.indexOf(data);
-                if(idx > -1)
-                    return true;
-                else
-                    return false;
-            });
-            if(trueTags.length>0){
-                return(
-                <ListItem key={trueTags.length+"_"+index} className={classes.listItem}>
-                    <Card className={classes.items}>
-                        <CardContent>
-                            <Typography className={classes.listType} color="textSecondary" gutterBottom>
-                                {obj.docType}
-                            </Typography>
-                            <Button  onClick={this.handleClickList}>
-                            <Typography className={classes.listTitle}>
-                                    {obj.title}
-                            </Typography>
-                            </Button>
-                                <Typography className={classes.pos} color="textSecondary">
-                                    {obj.date}
+        const filteredItems = () => {
+            return this.state.lists.map((obj,index) =>{
+                let trueTags = obj.category.filter(data=>{
+                    let idx = trueTagDatas.indexOf(data);
+                    if(idx > -1)
+                        return true;
+                    else
+                        return false;
+                });
+                if(trueTags.length>0 || trueTagDatas.length === 0){
+                    return(
+                    <ListItem key={trueTags.length+"_"+index} className={classes.listItem}>
+                        <Card className={classes.items}>
+                            <CardContent>
+                                <Typography className={classes.listType} color="textSecondary" gutterBottom>
+                                    {obj.docType}
                                 </Typography>
-                            <Typography>
-                                {obj.category.map((data, index2)=>{
-                                    let idx = trueTags.indexOf(data);
-                                    if(idx > -1)
-                                        return <Chip  key={`${index}_${index2}`} label={data} onClick={this.handleCategoryClick} className={classes.chip} component="a" color="primary"/>
-                                    else
-                                        return   <Chip  key={`${index}_${index2}`} label={data} onClick={this.handleCategoryClick} className={classes.chip} component="a" variant="outlined" color="primary"/>
-                                })}
-                            </Typography>
-                        </CardContent>
-                    </Card>
-                </ListItem>
-            )}
-        }).filter(data=>{
-            if(data!==undefined)return true;
-        })};
+                                <Button  onClick={this.handleClickList}>
+                                <Typography className={classes.listTitle}>
+                                        {obj.title}
+                                </Typography>
+                                </Button>
+                                    <Typography className={classes.pos} color="textSecondary">
+                                        {obj.date}
+                                    </Typography>
+                                <Typography>
+                                    {obj.category.map((data, index2)=>{
+                                        let idx = trueTags.indexOf(data);
+                                        if(idx > -1)
+                                            return <Chip  key={`${index}_${index2}`} label={data} onClick={this.handleCheckBoxChange(null, data)} className={classes.chip} component="a" color="primary"/>
+                                        else
+                                            return   <Chip  key={`${index}_${index2}`} label={data} onClick={this.handleCheckBoxChange(null, data)} className={classes.chip} component="a" variant="outlined" color="primary"/>
+                                    })}
+                                </Typography>
+                            </CardContent>
+                        </Card>
+                    </ListItem>
+                )}else return null;}
+            ).filter(data=>{
+                if(data)return true;
+            })};
 
         return(
             <div >

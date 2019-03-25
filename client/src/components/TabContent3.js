@@ -1,8 +1,8 @@
-import Write from './Write';
+import DocumentList from './DocumentList';
 import React from 'react';
 class TabContent3 extends React.Component{
     render(){
-        return (<Write/>);
+        return (<DocumentList/>);
     }
 }
 export default TabContent3;

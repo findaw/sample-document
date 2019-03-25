@@ -8,10 +8,10 @@ import FormGroup from '@material-ui/core/FormGroup';
 import Checkbox from '@material-ui/core/Checkbox';
 import Paper from '@material-ui/core/Paper';
 
-
 const styles = theme => ({
   control: {
     padding: theme.spacing.unit * 2,
+    width:1100,
   },
 });
   
