@@ -1,6 +1,8 @@
 import React from 'react';
-import TextField from '@material-ui/core/TextField'
+import CheckBoxList from './CheckBoxList';
+import RadioList from './RadioList';
 import { withStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField'
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -13,7 +15,6 @@ import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import Typography from '@material-ui/core/Typography';
 import InputBase from '@material-ui/core/InputBase';
-import CheckBoxList from './CheckBoxList';
 import Paper from '@material-ui/core/Paper';
 import Chip from '@material-ui/core/Chip';
 import Button from '@material-ui/core/Button';
@@ -59,10 +60,9 @@ const styles = theme =>({
     },
     checkBoxComponent:{
         display:'flex',
-        justifyContent : 'center',
+        flexWrap : 'wrap',
         margin : theme.spacing.unit,
         marginTop : 30,
-        alignText : 'center',
     },
     tagComponent:{
         display:'flex',
@@ -87,105 +87,129 @@ const styles = theme =>({
 
 class DocumentWrite extends React.Component{
     state={
-        category :{
-            "문서분류":{
-                "미해결" : false,  
-                "해결" : false,
-                "인물(범인)" : false,
-            },
-            "지역" :{
-                "경기도" : false,  
-                "서울" : false,
-                "울산" : false,
-                "수원" : false,
-                "강원도" : false,
-                "충청남도" : false,
-                "부산" : false,
-                "대구" : false,
-            },
-            "사건분류":{
-                "살인" : false,
-                "방화" : false,
-                "강도" : false,
-                "강간" : false,
-            },
-        },
-        subjects:[  'Oliver Hansen',
-            'Van Henry',
-            'April Tucker',
-            'Ralph Hubbard',
-            'Omar Alexander',
-            'Carlos Abbott',,],
-        selectSubjects : ['Oliver Hansen','Ralph Hubbard',],
-        expanded: 'panel1',
-        content:['','','','','',],
-        tagDatas:[],
+        doctype:{},
+        doctypeValue:"",
+        category :{},
+        subjects:{},
+        content:{},
+        addDefaultTags:[],
+        addTags:[],
         tagAddData:"",
+        expanded: 'panel1',
     }
-    handleSelectChange = event => {
-        this.setState({ selectSubjects: event.target.value });
+    callApi= async(url) =>{
+        const resString = await fetch(url);
+        const jsonData = await resString.json();
+        return jsonData;
+    }
+    componentDidMount(){
+        this.callApi("/api/default_subject")
+            .then(res=>{
+                let subjects = {};
+                let documenttype = {"문서분류": []}, doctypeValue = "";
+                res.forEach(({doctype, name, isNeed})=>{
+                    if(!subjects[doctype])  subjects[doctype] = {};
+                    subjects[doctype][name] = isNeed.data[0] === 1 ? true : false;
+                    if(documenttype["문서분류"].indexOf(doctype) < 0)
+                        documenttype["문서분류"].push(doctype);
+                    if(doctypeValue === "")
+                        doctypeValue = doctype;
+                });
+            
+                this.setState({subjects, doctype : documenttype, doctypeValue });
+            })
+            .catch(err=>console.log(err));
+        this.callApi("/api/default_category")
+            .then(res=>{
+                let category = {};
+                res.forEach(({typename, name})=>{
+                if(!category[typename])  category[typename] = {};
+                   category[typename][name] = false;
+                })
+                this.setState({category}); 
+
+            })
+            .catch(err=>console.log(err));
+    }
+    handleSelectChange = title=> (event,value) => {
+        const {content, doctypeValue, subjects} = this.state;
+        console.log(event.target);
+        this.setState({ subjects : {...subjects,
+            [doctypeValue] : {
+                ...subjects[doctypeValue],
+                [title] : !subjects[doctypeValue][title]
+            }, 
+        }});
+        if(value && !content[title])
+            this.setState({ content: {...content, [title] : ""} });
     };
     handleSubjectBoxChange = panel => (event, expanded) => {
         this.setState({
           expanded: expanded ? panel : false,
         });
     };
-    handleContentBlur = index=> event=>{
+    handleContentBlur = title=> event=>{
         const content = event.target.value ? event.target.value : "";
         this.setState({
-            content : this.state.content.map((data, i)=>{
-                if(index === i)
-                    return content;
-                else
-                    return data;
-            })
+            content : {...this.state.content, [title] : content}
         },()=>{
-          //  console.log(this.state.content[index]);
-           // console.log(event.target ? event.target.value:false);
+            console.log(this.state.content);
         })
     }
     handleSaveButtonClick = event=>{
-        alert(this.state.content);
+        console.log(this.state.content);
     }
-    handleCheckBoxChange = (key,key2)=> (event,value) => {
-        const {category, tagDatas} = this.state;
+    handleRadioChange = target => event=>{
+        this.setState({
+            [target] : event.target.value, 
+            content : {}
+        });
+    }
+    handleCheckBoxChange = target=> (key,key2)=> (event,value) => {
+        const {addDefaultTags} = this.state;
         if(value){
-            let tmp = [...tagDatas,key2];
-            this.setState({tagDatas : tmp});
+            let tmp = [...addDefaultTags,key2];
+            this.setState({addDefaultTags : tmp});
         }else{
-            let tmp = [...tagDatas];
+            let tmp = [...addDefaultTags];
             let idx = tmp.indexOf(key2);
             if(idx > -1) {
                 tmp.splice(idx,1);
-                this.setState({tagDatas : tmp});
+                this.setState({addDefaultTags : tmp});
             }
         }
         this.setState({ 
-            category : {
-                ...category,
+            [target] : {
+                ...this.state[target],
                 [key] : {
-                    ...category[key],
+                    ...this.state[target][key],
                     [key2] : value
                 }
             }
-        }, ()=>{
-          //  console.log(value);
-          //  console.log(trueTagDatas);
-         //   console.log(tagDatas[key]);
-      }); 
+        }); 
     }
     handleTagAddButtonClick = event=>{
         if(this.state.tagAddData.trim() !== ""){
-            let tmp = [...this.state.tagDatas,this.state.tagAddData];
-            this.setState({tagDatas : tmp, tagAddData : ""});
+            let tmp = [...this.state.addTags,this.state.tagAddData];
+            this.setState({addTags : tmp, tagAddData : ""});
         }
     }
     handleTagAddFieldBlur = event=>{
         this.setState({tagAddData : event.target.value});
     }
+    handleTagDelete = data => event=>{
+        const {addTags} = this.state;
+        let tmp = [...addTags];
+        let idx = tmp.indexOf(data);
+        if(idx > -1) {
+            tmp.splice(idx,1);
+            this.setState({addTags : tmp});
+        }
+        
+    }
     render(){
         const {classes} = this.props;
-        const {subjects, selectSubjects,expanded, content, category, tagDatas } = this.state;
+        const {doctype, doctypeValue, subjects,expanded, content,category, addDefaultTags, addTags } = this.state;
         const ITEM_HEIGHT = 48;
         const ITEM_PADDING_TOP = 8;
         const MenuProps = {
@@ -209,70 +233,68 @@ class DocumentWrite extends React.Component{
                         variant="outlined"
                         />
                 </div>
+                <div className={classes.checkBoxComponent}>
+                    <RadioList datas={doctype} selectValue={doctypeValue} onChange={this.handleRadioChange("doctypeValue")}/>
+                </div>
                 <div className={classes.selectComponent}>
                     <FormControl className={classes.selectControl}>
-                        <InputLabel htmlFor="select-multiple-checkbox">목차</InputLabel>
+                        <InputLabel htmlFor="select-multiple-checkbox">{doctypeValue} 목차</InputLabel>
                         <Select
-                        multiple
-                        value={selectSubjects}
-                        onChange={this.handleSelectChange}
-                        input={<Input id="select-multiple-checkbox" />}
-                        renderValue={selected => selected.join(', ')}
                         MenuProps={MenuProps}
                         >
-                        {subjects.map(name => (
-                            <MenuItem key={name}  value={name}>
-                            <Checkbox checked={selectSubjects.indexOf(name) > -1} />
-                            <ListItemText  primary={name} />
-                            </MenuItem>
-                        ))}
+                          {subjects[doctypeValue] && Object.keys(subjects[doctypeValue]).map((title,index)=>{
+                                return(
+                                    <MenuItem key={index} value={title} >
+                                    <Checkbox onChange={this.handleSelectChange(title)} checked={subjects[doctypeValue][title]} />
+                                    <ListItemText primary={title} />
+                                    </MenuItem>
+                            )
+                        })}
                         </Select>
                     </FormControl>
                   </div>
                   <div  className={classes.subjectComponent}>
                     <div className={classes.subjectWrapper}>
-                    {selectSubjects.map((data,index)=>{
-                        return (
-                            <ExpansionPanel
-                                className={classes.subjectField}
-                                key={data} square
-                                expanded={expanded === `panel${index}`}
-                                onChange={this.handleSubjectBoxChange(`panel${index}`)}
-                                >
-                                <ExpansionPanelSummary>
-                                    <Typography>{data}</Typography>
-                                </ExpansionPanelSummary>
-                                <ExpansionPanelDetails>
-                                        <InputBase 
-                                            label="content"
-                                            multiline
-                                            rows="15"
-                                            fullWidth
-                                            defaultValue={content[index]}
-                                            onBlur={this.handleContentBlur(index)}
-                                            placeholder="내용 입력"
-                                            className={classes.contentField}
-                                        />
-                                </ExpansionPanelDetails>
-                            </ExpansionPanel>
-                        )
-                    }).sort((a,b)=>{
-                        if(a.key>b.key)
-                            return 1;
-                        else
-                            return -1;
+                    {subjects[doctypeValue] && 
+                    Object.keys(subjects[doctypeValue]).map((title,index)=>{
+                        if(subjects[doctypeValue][title])
+                            return (
+                                <ExpansionPanel
+                                    className={classes.subjectField}
+                                    key={index} square
+                                    expanded={expanded === `panel${index}`}
+                                    onChange={this.handleSubjectBoxChange(`panel${index}`)}
+                                    >
+                                    <ExpansionPanelSummary>
+                                        <Typography>{title}</Typography>
+                                    </ExpansionPanelSummary>
+                                    <ExpansionPanelDetails>
+                                            <InputBase 
+                                                label="content"
+                                                multiline
+                                                rows="15"
+                                                fullWidth
+                                                value={content[title]}
+                                                onBlur={this.handleContentBlur(title)}
+                                                placeholder="내용 입력"
+                                                className={classes.contentField}
+                                            />
+                                    </ExpansionPanelDetails>
+                                </ExpansionPanel>
+                            )
+                      
                     })}
                 </div>
                 </div>
                 <div className={classes.checkBoxComponent}>
-                    <CheckBoxList datas={category} onChange={this.handleCheckBoxChange}/>
+                    <CheckBoxList datas={category} onChange={this.handleCheckBoxChange("category")}/>
                 </div>
                 <div className={classes.tagComponent}>
                     <div className={classes.tagWrapper}>
                         <Paper className={classes.tagPaper}>
                         
                         <p style={{padding:20}}>태그내역</p>
-                        {tagDatas.map((data, index)=>{
+                        {addDefaultTags.map((data, index)=>{
                             return(
                                 <Chip
                                 key={index}
@@ -285,17 +307,33 @@ class DocumentWrite extends React.Component{
                                 color="primary"
                                 />
                             )
-                        }) }
+                        })} 
+                        {addTags.map((data, index)=>{
+                            return(
+                                <Chip
+                                key={index}
+                                label={data}
+                                className={classes.chip}
+                                component="a"
+                                href="#chip"
+                                clickable
+                                variant="outlined"
+                                color="primary"
+                                onDelete={this.handleTagDelete(data)}
+                                />
+                            )
+                        })}
                         </Paper>
                     <p>
                         <TextField
+                            maxLength="15"
                             value={this.state.tagAddData} 
                             onChange={this.handleTagAddFieldBlur}
                             label="추가할 태그"
                             placeholder="특징적인 것 입력"
                             variant="outlined"
                         />
-                        <Button  onClick={this.handleTagAddButtonClick} className={classes.tagAddButton} variant="contained" color="primary" variant="outlined">추가</Button>
+                        <Button  onClick={this.handleTagAddButtonClick} variant="contained" color="primary"  className={classes.tagAddButton}  variant="outlined">추가</Button>
                         <br/><br/>
                         <Button  onClick={this.handleSaveButtonClick} variant="contained" color="primary">저장</Button>
                     </p>

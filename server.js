@@ -15,14 +15,14 @@ const conn = mysql.createConnection({
 conn.connect();
 app.use(express.json());
 
-app.get('/api/document_category', (req, res)=> {
-    conn.query("SELECT C.category, T.categorytype FROM document_category AS C JOIN document_categorytype as T ON C.categorytype_id =T.categorytype_id ORDER BY categorytype ASC;"
+app.get('/api/default_subject', (req, res)=> {
+    conn.query("SELECT DT.doctype_id, DT.name AS doctype, DS.name, DS.isNeed FROM default_subject AS DS JOIN doctype AS DT ON DS.doctype_id = DT.doctype_id ORDER BY doctype_id ASC;"
     , (err, rows, fields)=>{
         res.send(rows);
     });
 });
-app.get('/api/document_subject', (req, res)=> {
-    conn.query("SELECT subject FROM document_subject ORDER BY subject ASC;"
+app.get('/api/default_category', (req, res)=> {
+    conn.query("SELECT CT.name AS typename, DC.name FROM default_category AS DC JOIN category_type AS CT ON DC.category_type_id = CT.category_type_id ORDER BY CT.category_type_id ASC;"
     , (err, rows, fields)=>{
         res.send(rows);
     });

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
 import MainBar from './components/MainBar';
-import TabBarContainer from './components/TabBarContainer';
+import TabBarRouter from './components/TabBarRouter';
 import {withStyles} from '@material-ui/core';
 
 const styles = theme=>({
@@ -21,7 +21,7 @@ class App extends Component {
     return (
       <div className={classes.app}>
         <MainBar />
-        <TabBarContainer />
+        <TabBarRouter />
       </div>
     );
   }

@@ -1,9 +1,11 @@
 import React from 'react';
-import TabContainer from './TabContainer';
 import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import { withStyles } from '@material-ui/core';
+import DocumentView from './DocumentView';
+import DocumentWrite from './DocumentWrite';
+import DocumentList from './DocumentList';
 
 const styles = theme => ({
     tabs:{  
@@ -14,7 +16,7 @@ const styles = theme => ({
     },
 });
 
-class TabBarContainer extends React.Component{
+class TabBarRouter extends React.Component{
     constructor(props){
         super(props);
         this.state={
@@ -38,9 +40,9 @@ class TabBarContainer extends React.Component{
                     variant="scrollable"
                     scrollButtons="on"
                   >
+                      <Tab label="list" />
                       <Tab label="view" />
                       <Tab label="write" />
-                      <Tab label="list" />
                       <Tab label="etc" />
                       <Tab label="etc" />
                       <Tab label="etc" />
@@ -49,11 +51,14 @@ class TabBarContainer extends React.Component{
                 </div>
               </AppBar>
                 <div>
-                  <TabContainer value={this.state.value}/>
+                  {this.state.value === 0 && <DocumentList/>}
+                  {this.state.value === 1 && <DocumentView/>}
+                  {this.state.value === 2 && <DocumentWrite/>}
+                  
                 </div>
           </div>
         );
     }
 }
 
-export default withStyles(styles)(TabBarContainer);
+export default withStyles(styles)(TabBarRouter);
