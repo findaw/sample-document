@@ -38,9 +38,8 @@ class TabBarContainer extends React.Component{
                     variant="scrollable"
                     scrollButtons="on"
                   >
-                      <Tab label="write" />
-                      <Tab label="case" />
                       <Tab label="view" />
+                      <Tab label="write" />
                       <Tab label="list" />
                       <Tab label="etc" />
                       <Tab label="etc" />

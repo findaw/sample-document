@@ -296,10 +296,11 @@ class DocumentWrite extends React.Component{
                             variant="outlined"
                         />
                         <Button  onClick={this.handleTagAddButtonClick} className={classes.tagAddButton} variant="contained" color="primary" variant="outlined">추가</Button>
+                        <br/><br/>
+                        <Button  onClick={this.handleSaveButtonClick} variant="contained" color="primary">저장</Button>
                     </p>
                    </div>
-                </div><br/><br/>
-                   <Button  onClick={this.handleSaveButtonClick} variant="contained" color="primary">저장</Button>
+                </div>
             </div>
         )
     }

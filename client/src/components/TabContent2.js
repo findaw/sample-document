@@ -1,18 +1,8 @@
+import DocumentList from './DocumentList';
 import React from 'react';
-import DocumentView from './DocumentView';
-
-
 class TabContent2 extends React.Component{
-    constructor(props){
-        super(props);
-    }
     render(){
-        return(
-            <div >
-                <DocumentView/>
-            </div>
-        );
+        return (<DocumentList/>);
     }
 }
-
 export default TabContent2;

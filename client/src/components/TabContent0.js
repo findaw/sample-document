@@ -1,5 +1,5 @@
 import React from 'react';
-import DocumentWrite from './DocumentWrite';
+import DocumentView from './DocumentView';
 
 
 
@@ -11,7 +11,7 @@ class TabContent0 extends React.Component{
         const {classes} = this.props;
         return(
             <div>
-                <DocumentWrite />
+                <DocumentView />
             </div>
         );
     }
