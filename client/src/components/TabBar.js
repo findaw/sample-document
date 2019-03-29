@@ -11,6 +11,9 @@ const styles = theme => ({
         justifyContent : 'center',
         backgroundColor: theme.palette.background.paper,
     },
+    link:{
+        textDecoration: 'none',
+    }
 });
 
 function TabBar(props){
@@ -20,19 +23,19 @@ function TabBar(props){
             <div className={classes.tabs}>
             <Tabs
                 value={props.value}
-                onChange={props.onChange}
+                onChange={props.onChange} 
                 indicatorColor="primary"
                 textColor="primary"
                 variant="scrollable"
                 scrollButtons="on"
             >
-                <Tab label="list" />
-                <Tab label="view" />
-                <Tab label="write" />
-                <Tab label="etc" />
-                <Tab label="etc" />
-                <Tab label="etc" />
-                <Tab label="more" />
+               <Tab label="list"/>
+               <Tab label="view"/>
+               <Tab label="write"/>
+               <Tab label="etc"/>
+               <Tab label="etc"/>
+               <Tab label="etc"/>
+               <Tab label="more"/>
             </Tabs>
             </div>
         </AppBar>

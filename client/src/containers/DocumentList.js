@@ -9,7 +9,6 @@ import Chip from '@material-ui/core/Chip';
 import Button from '@material-ui/core/Button';
 import CheckBoxList from '../components/CheckBoxList';
 
-
 class DocumentList extends React.Component{
     state = {
         dense: false,
@@ -44,7 +43,7 @@ class DocumentList extends React.Component{
             lists.forEach(obj=>{
                 obj.category.push(this.state.doctype[obj.doctype]);
             })
-            this.setState({lists}, ()=>{console.log(this.state)});
+            this.setState({lists});
         })
         .catch(err=>console.log(err));
     }
@@ -80,15 +79,9 @@ class DocumentList extends React.Component{
             // console.log(trueTagDatas);
             // console.log(tagDatas[key]);
       });
+    }
 
-        
-    }
-    handleCategoryClick  = () =>{
-        alert("clicked");
-    }
-    handleClickList= () =>{
-        alert("clicked");
-    }
+    
     render() {
         const { classes } = this.props;
         const { doctype, dense, trueTagDatas } = this.state;
@@ -109,10 +102,12 @@ class DocumentList extends React.Component{
                                 <Typography className={classes.listType} color="textSecondary" gutterBottom>
                                     {doctype[obj.doctype]}
                                 </Typography>
-                                <Button  onClick={this.handleClickList}>
-                                <Typography className={classes.listTitle}>
-                                        {obj.title}
-                                </Typography>
+                                <Button >
+                                    <a href={`/view/${obj.document_id}`} className={classes.link}>
+                                        <Typography className={classes.listTitle}>
+                                                {obj.title}
+                                        </Typography>
+                                    </a>
                                 </Button>
                                     <Typography className={classes.pos} color="textSecondary">
                                         {obj.date}
@@ -185,7 +180,10 @@ const styles = theme => ({
         flexWrap: 'wrap',
         justifyContent: 'center',
         margin : 20,
-    }
+    },
+    link:{
+      textDecoration : 'none',  
+    },
 });
 
 

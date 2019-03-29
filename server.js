@@ -16,6 +16,36 @@ const pool = mysql.createPool({
     waitForConnections:false,
 });
 
+
+app.get('/api/view/:id', async(req, res)=>{
+    let id= req.params.id;
+    const conn = await pool.getConnection();
+    await conn.beginTransaction();
+    try{
+        let [rows] = await conn.query("SELECT L.document_id, L.title, L.created_date AS date, T.NAME AS doctype FROM (SELECT * FROM document_list WHERE document_id = ?) AS L, doctype AS T WHERE L.doctype_id = T.doctype_id;",id);
+        const {document_id, title, date, doctype} = rows[0];
+        [rows] = await conn.query("SELECT name AS category FROM document_tag WHERE document_id = ?",document_id);
+        const category = rows.map(obj=>{return obj.category});
+        [rows] = await conn.query("SELECT subject_name,content,modified_date FROM document_content WHERE document_id = ?",document_id);
+        let content = [], subjects = [],modified_date =[];
+        rows.forEach(obj=>{
+            subjects.push(obj.subject_name);
+            content.push(obj.content);
+            modified_date.push(obj.modified_date);
+        });
+        conn.commit();
+        res.send({document_id, title, date, doctype, category, content, subjects, modified_date});
+        
+    }catch(err){
+        console.log(err);
+        conn.rollback();
+        res.status(400).send("error");
+    }finally{
+        conn.release();
+    }
+    
+});
+
 app.get('/api/default-doctype-category', async(req, res)=>{
     const conn = await pool.getConnection();
     try{
@@ -40,6 +70,7 @@ app.get('/api/document-list',async(req, res)=>{
             [rows] = await conn.query("SELECT name FROM document_tag WHERE document_id = ?;",lists[i].document_id);
             lists[i].category = rows.map(obj=>{return obj.name});
         }
+        console.log(lists);
         res.send({lists});
     }catch(err){
         console.log(err);

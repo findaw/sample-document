@@ -3,9 +3,8 @@ import './App.css';
 import {withStyles} from '@material-ui/core';
 import MainBar from './components/MainBar';
 import TabBar from './components/TabBar';
-import DocumentList from './containers/DocumentList';
-import DocumentView from './containers/DocumentView';
-import DocumentWrite from './containers/DocumentWrite';
+import {Route} from 'react-router-dom';
+import {DocumentList,DocumentView, DocumentWrite} from './containers/pages';
 
 const styles = theme=>({
   app : {
@@ -30,9 +29,9 @@ class App extends Component {
         <MainBar />
         <TabBar  onChange={this.handleTabBarChange} value={this.state.tabValue}/>
         <div>
-          {this.state.tabValue === 0 && <DocumentList/>}
-          {this.state.tabValue === 1 && <DocumentView/>}
-          {this.state.tabValue === 2 && <DocumentWrite/>}
+          <Route exact path="/" component={DocumentList}/>
+          <Route path="/write" component={DocumentWrite} />
+          <Route path="/view/:id" component={DocumentView} />
           
         </div>
       </div>

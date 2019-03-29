@@ -10,7 +10,8 @@
         "body-parser": "^1.18.3",
         "express": "^4.16.4",
         "formidable": "^1.2.1",
-        "mysql2": "^1.6.5"
+        "mysql2": "^1.6.5",
+        "query-string": "^6.4.2"
     },
     "devDependencies": {
         "concurrently": "^4.1.0"
