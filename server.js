@@ -16,6 +16,39 @@ const pool = mysql.createPool({
     waitForConnections:false,
 });
 
+app.get('/api/default-doctype-category', async(req, res)=>{
+    const conn = await pool.getConnection();
+    try{
+        let [rows] = await conn.query("SELECT * FROM doctype;");
+        const doctype = rows;
+        [rows] = await conn.query("SELECT CT.name AS typename, DC.name FROM default_category AS DC JOIN category_type AS CT ON DC.category_type_id = CT.category_type_id ORDER BY CT.category_type_id ASC;");
+        const category = rows;
+        res.send({doctype, category});
+    }catch(err){
+        console.log(err);
+        res.status(400).send("error");
+    }finally{
+        conn.release();
+    }
+});
+app.get('/api/document-list',async(req, res)=>{
+    const conn = await pool.getConnection();
+    try{
+        let [rows] = await conn.query("SELECT document_id,title,doctype_id AS doctype,created_date AS date FROM document_list WHERE isDeleted = 0;");
+        const lists = rows;
+        for(let i = 0; i < lists.length; i++){
+            [rows] = await conn.query("SELECT name FROM document_tag WHERE document_id = ?;",lists[i].document_id);
+            lists[i].category = rows.map(obj=>{return obj.name});
+        }
+        res.send({lists});
+    }catch(err){
+        console.log(err);
+        conn.rollback();
+        res.status(400).send("error");
+    }finally{
+        conn.release();
+    }
+});
 app.get('/api/default-subject-category',  async (req, res)=> {
     const conn = await pool.getConnection();
     await conn.beginTransaction();

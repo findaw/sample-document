@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import './App.css';
+import {withStyles} from '@material-ui/core';
 import MainBar from './components/MainBar';
 import TabBar from './components/TabBar';
-import {withStyles} from '@material-ui/core';
 import DocumentList from './containers/DocumentList';
 import DocumentView from './containers/DocumentView';
 import DocumentWrite from './containers/DocumentWrite';

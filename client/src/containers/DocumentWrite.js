@@ -33,8 +33,8 @@ class DocumentWrite extends React.Component{
         expanded: 'panel1',
     }
     callApi= async(url) =>{
-        const resString = await fetch(url);
-        const jsonData = await resString.json();
+        const resp = await fetch(url);
+        const jsonData = await resp.json();
         return jsonData;
     }
     componentDidMount(){
