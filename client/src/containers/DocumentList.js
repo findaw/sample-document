@@ -7,7 +7,7 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Chip from '@material-ui/core/Chip';
 import Button from '@material-ui/core/Button';
-import CheckBoxList from './CheckBoxList';
+import CheckBoxList from '../components/CheckBoxList';
 
 const styles = theme => ({
     list: {

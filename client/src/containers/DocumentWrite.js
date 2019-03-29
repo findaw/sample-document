@@ -1,6 +1,6 @@
 import React from 'react';
-import CheckBoxList from './CheckBoxList';
-import RadioList from './RadioList';
+import CheckBoxList from '../components/CheckBoxList';
+import RadioList from '../components/RadioList';
 import { withStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField'
 import InputLabel from '@material-ui/core/InputLabel';
@@ -20,7 +20,9 @@ import Button from '@material-ui/core/Button';
 
 class DocumentWrite extends React.Component{
     state={
+        title:"",
         doctype:{},
+        doctypeId:{},
         doctypeValue:"",
         category :{},
         subjects:{},
@@ -36,33 +38,45 @@ class DocumentWrite extends React.Component{
         return jsonData;
     }
     componentDidMount(){
-        this.callApi("/api/default_subject")
-            .then(res=>{
-                let subjects = {};
+        this.callApi("/api/default-subject-category")
+            .then(({subjarr, catearr})=>{
+                let subjects = {}, category = {}, doctypeId = {};
                 let documenttype = {"문서분류": []}, doctypeValue = "";
-                res.forEach(({doctype, name, isNeed})=>{
+
+                subjarr.forEach(({doctype_id, doctype, name, isNeed})=>{
                     if(!subjects[doctype])  subjects[doctype] = {};
                     subjects[doctype][name] = isNeed.data[0] === 1 ? true : false;
-                    if(documenttype["문서분류"].indexOf(doctype) < 0)
+                    if(documenttype["문서분류"].indexOf(doctype) < 0){
                         documenttype["문서분류"].push(doctype);
+                        doctypeId[doctype] = doctype_id;
+                    }
                     if(doctypeValue === "")
                         doctypeValue = doctype;
                 });
-            
-                this.setState({subjects, doctype : documenttype, doctypeValue });
-            })
-            .catch(err=>console.log(err));
-        this.callApi("/api/default_category")
-            .then(res=>{
-                let category = {};
-                res.forEach(({typename, name})=>{
+                catearr.forEach(({typename, name})=>{
                 if(!category[typename])  category[typename] = {};
                    category[typename][name] = false;
                 })
-                this.setState({category}); 
 
+                this.setState({subjects, category, doctypeId, doctype : documenttype, doctypeValue });
             })
             .catch(err=>console.log(err));
+    }
+    handleTitleChange = event=>{
+        this.setState({title : event.target.value});
+    }
+    handleRadioChange = target => event=>{
+        const check = window.confirm("내용이 초기화됩니다. 문서타입을 변경하시겠습니까?");
+        if(!check) return;
+        this.setState({
+            [target] : event.target.value, 
+            content : {}
+        },()=>{
+            let textareas = document.getElementsByTagName("textarea");
+            for(let item of textareas){
+                item.value = "";
+            }
+        });
     }
     handleSelectChange = (event) => {
         const {content, doctypeValue, subjects} = this.state;
@@ -71,10 +85,11 @@ class DocumentWrite extends React.Component{
                 ...subjects[doctypeValue],
                 [event.target.value] : !subjects[doctypeValue][event.target.value]
             }, 
-        }});
-        if(subjects[doctypeValue][event.target.value] && !content[event.target.value])
-            this.setState({ content: {...content, [event.target.value] : ""} });
-    };
+        }},()=>{    
+            if(!subjects[doctypeValue][event.target.value]);
+                this.setState({ content: {...content, [event.target.value] : ""} });
+        });
+    }
     handleSubjectBoxChange = panel => (event, expanded) => {
         this.setState({
           expanded: expanded ? panel : false,
@@ -87,20 +102,6 @@ class DocumentWrite extends React.Component{
         },()=>{
             console.log(this.state.content);
         })
-    }
-    handleSaveButtonClick = event=>{
-        console.log(this.state.content);
-    }
-    handleRadioChange = target => event=>{
-        this.setState({
-            [target] : event.target.value, 
-            content : {}
-        },()=>{
-            let textareas = document.getElementsByTagName("textarea");
-            for(let item of textareas)
-                item.value = "";
-        });
-
     }
     handleCheckBoxChange = target=> (key,key2)=> (event,value) => {
         const {addDefaultTags} = this.state;
@@ -142,7 +143,30 @@ class DocumentWrite extends React.Component{
             tmp.splice(idx,1);
             this.setState({addTags : tmp});
         }
-        
+    }
+    sendDocument = async(url, data) =>{
+        return await fetch(url,{
+            method : "POST",
+            headers:{
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data)
+        });
+    }
+    handleSaveButtonClick = async (event)=>{
+        const {title, content, doctypeId, doctypeValue, addDefaultTags, addTags} = this.state;
+        let tag = [...addDefaultTags, ...addTags];
+        let body = {title, content, tag, doctype_id : doctypeId[doctypeValue]};
+
+        this.sendDocument("/api/document",body).then(res=>{
+            if(res.status === 200){
+                alert("저장되었습니다.");
+                window.location.reload();
+            }else if(res.status === 400){
+                alert("서버에 문제가 발생했습니다.");
+            }
+        })
+        .catch(err=>console.log(err));
     }
     render(){
         const {classes} = this.props;
@@ -151,7 +175,7 @@ class DocumentWrite extends React.Component{
         return(
             <div className={classes.container}>
                 <div className={classes.titleComponenet}>
-                    <TextField id="outlined-with-placeholder" label="문서 제목" placeholder="문서의 제목을 입력하세요." className={classes.titleField} margin="normal" variant="outlined" />
+                    <TextField onChange={this.handleTitleChange} label="문서 제목" placeholder="문서의 제목을 입력하세요." className={classes.titleField} margin="normal" variant="outlined" />
                 </div>
                 <div className={classes.checkBoxComponent}>
                     <RadioList datas={doctype} selectValue={doctypeValue} onChange={this.handleRadioChange("doctypeValue")}/>
@@ -159,14 +183,15 @@ class DocumentWrite extends React.Component{
                 <div className={classes.selectComponent}>
                     <FormControl className={classes.selectControl}>
                         <InputLabel htmlFor="select-multiple-checkbox">{doctypeValue} 목차</InputLabel>
-                        <Select value={subjects[doctypeValue]} onChange={this.handleSelectChange} >
-                        {subjects[doctypeValue] && Object.keys(subjects[doctypeValue]).map((title,index)=>{ return(
+                        {subjects[doctypeValue] && 
+                        (<Select value={subjects[doctypeValue]} onChange={this.handleSelectChange} >
+                         {Object.keys(subjects[doctypeValue]).map((title,index)=>{ return(
                             <MenuItem key={index} value={title} >
                             <Checkbox checked={subjects[doctypeValue][title]} />
                             <ListItemText primary={title} />
                             </MenuItem>
                         )})}
-                        </Select>
+                        </Select>)}
                     </FormControl>
                 </div>
                 <div className={classes.subjectComponent}>
@@ -202,12 +227,12 @@ class DocumentWrite extends React.Component{
                                 )})}
                             </div>
                         </Paper>
-                         <p>
+                         <div className={classes.TagAddComponent}>
                             <TextField maxLength="15" value={this.state.tagAddData} onChange={this.handleTagAddFieldBlur} label="추가할 태그" placeholder="특징적인 것 입력" variant="outlined" />
                             <Button  onClick={this.handleTagAddButtonClick} variant="contained" color="primary"  className={classes.tagAddButton}  variant="outlined">추가</Button>
                             <br/><br/>
                             <Button  onClick={this.handleSaveButtonClick} variant="contained" color="primary">저장</Button>
-                        </p>
+                        </div>
                    </div>
                 </div>
             </div>
@@ -281,6 +306,9 @@ const styles = theme =>({
     tagPaperTitle:{
         paddingLeft:30,
         paddingTop:20,
+    },
+    TagAddComponent:{
+        marginTop:20,
     },
     tagAddButton:{
         height:58,
