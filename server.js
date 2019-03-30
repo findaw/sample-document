@@ -70,7 +70,6 @@ app.get('/api/document-list',async(req, res)=>{
             [rows] = await conn.query("SELECT name FROM document_tag WHERE document_id = ?;",lists[i].document_id);
             lists[i].category = rows.map(obj=>{return obj.name});
         }
-        console.log(lists);
         res.send({lists});
     }catch(err){
         console.log(err);
@@ -104,7 +103,6 @@ app.post('/api/document', async (req, res)=> {
     await conn.beginTransaction();
     let {title, doctype_id, content, tag} = req.body;
     const timestamp = new Date();
-    console.log(timestamp)
     try{
         await conn.query("INSERT INTO document_list VALUES(null, ?, ?,?, 0)",[title,doctype_id,timestamp]);
         let [rows] = await conn.query("SELECT document_id FROM document_list ORDER BY document_id DESC LIMIT 1;");

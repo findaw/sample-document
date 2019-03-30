@@ -103,7 +103,7 @@ class DocumentList extends React.Component{
                                     {doctype[obj.doctype]}
                                 </Typography>
                                 <Button >
-                                    <a href={`/view/${obj.document_id}`} className={classes.link}>
+                                    <a href={`/view/${obj.document_id}`} className={classes.link} >
                                         <Typography className={classes.listTitle}>
                                                 {obj.title}
                                         </Typography>

@@ -98,8 +98,7 @@ class DocumentView extends React.Component{
     }
     render(){
         const {classes} = this.props;
-        const{doctype, title, subjects, content,category,otherDocuments} = this.state;    
-
+        const{doctype, title, subjects, content,category,otherDocuments} = this.state;  
         return(
             <div className={classes.root}>
                 <div className={classes.titleComponent}>
@@ -124,7 +123,7 @@ class DocumentView extends React.Component{
                     {subjects.map((data, index)=>{
                         return (
                             <ExpansionPanel key={"content"+index} className={classes.contentsComponent} expanded={true}>
-                                <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+                                <ExpansionPanelSummary expandIcon={<ExpandMoreIcon  />}>
                                 <Typography className={classes.heading}>{data}</Typography>
                                 </ExpansionPanelSummary>
                                 <ExpansionPanelDetails>
@@ -147,7 +146,7 @@ class DocumentView extends React.Component{
                             <Card className={classes.items}>
                                 <CardContent>
                                     <Button>
-                                    <a href={`/view/${obj.document_id}`} className={classes.link}>
+                                    <a href={`/view/${obj.document_id}`} className={classes.link} >
                                         <Typography className={classes.listTitle}>
                                                 {obj.title}
                                         </Typography>

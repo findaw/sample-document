@@ -19,7 +19,7 @@ class App extends Component {
       tabValue : 0,
     }
   }
-  handleTabBarChange = (evnet,value)=>{
+  handleTabBarChange = value =>event=>{
     this.setState({tabValue : value});
   }
   render() {
@@ -30,9 +30,9 @@ class App extends Component {
         <TabBar  onChange={this.handleTabBarChange} value={this.state.tabValue}/>
         <div>
           <Route exact path="/" component={DocumentList}/>
+          <Route exact path="/list" component={DocumentList} />
           <Route path="/write" component={DocumentWrite} />
-          <Route path="/view/:id" component={DocumentView} />
-          
+          <Route path="/view/:id" render={() => (<DocumentView/>)} />
         </div>
       </div>
     );

@@ -24,17 +24,18 @@ class MenuDrawer extends React.Component{
     constructor(props){
         super(props);
         this.state={
-          item : ['Write', 'Starred', 'Send email'],
+          item : ['write', 'list', 'send email'],
           item2 : ['Drafts','All mail', 'Trash', 'Spam'],
         }
     }
     render(){
         const { classes } = this.props;
+        const origin = new URL(window.location.href).origin;
         const draweritems = (
             <div className={classes.drawer}>
               <List>
                 {this.state.item.map((text, index) => (
-                  <a key={text} className={classes.menuLink} href={`./${text}`}>
+                  <a key={text} className={classes.menuLink} href={`${origin}/${text}`}>
                     <ListItem button >
                       <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
                       <ListItemText primary={text} />
@@ -44,7 +45,7 @@ class MenuDrawer extends React.Component{
               </List>
               <List>
                 {this.state.item2.map((text, index) => (
-                  <a key={text} className={classes.menuLink} href={`./${text}`}>
+                  <a key={text} className={classes.menuLink} href={`${origin}/${text}`}>
                     <ListItem button >
                       <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
                       <ListItemText primary={text} />
